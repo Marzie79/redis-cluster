@@ -1,7 +1,7 @@
 version: '3.5'
 services:
   cluster:
-    image: 'redis:6.0-alpine'
+    image: 'redis:6.2-alpine'
     container_name: 'cluster'
     command: redis-cli --cluster create 172.20.0.31:6373 172.20.0.32:6374 172.20.0.33:6375 172.20.0.34:6376 172.20.0.35:6377 172.20.0.36:6378 --cluster-replicas 1 --cluster-yes
     depends_on:
@@ -16,79 +16,73 @@ services:
         ipv4_address: 172.20.0.10
 
   node1:
-    image: 'redis:6.0-alpine'
+    image: 'redis:6.2-alpine'
     container_name: node1
-    command: redis-server /usr/local/etc/redis/redis.conf
+    command: redis-server --port 6373 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --cluster-announce-ip 172.20.0.31 --appendonly yes
     ports:
       - '6373:6373'
     volumes:
       - redis-node-1-data:/var/lib/redis
-      - ./docker/redis-node-1.conf:/usr/local/etc/redis/redis.conf
     networks:
       app_subnet:
         ipv4_address: 172.20.0.31
 
   node2:
-    image: 'redis:6.0-alpine'
+    image: 'redis:6.2-alpine'
     container_name: node2
-    command: redis-server /usr/local/etc/redis/redis.conf
+    command: redis-server --port 6374 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --cluster-announce-ip 172.20.0.32 --appendonly yes
     ports:
       - '6374:6374'
     volumes:
       - redis-node-2-data:/var/lib/redis
-      - ./docker/redis-node-2.conf:/usr/local/etc/redis/redis.conf
     networks:
       app_subnet:
         ipv4_address: 172.20.0.32
 
   node3:
-    image: 'redis:6.0-alpine'
+    image: 'redis:6.2-alpine'
     container_name: node3
-    command: redis-server /usr/local/etc/redis/redis.conf
+    command: redis-server --port 6375 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --cluster-announce-ip 172.20.0.33 --appendonly yes
     ports:
       - '6375:6375'
     volumes:
       - redis-node-3-data:/var/lib/redis
-      - ./docker/redis-node-3.conf:/usr/local/etc/redis/redis.conf
     networks:
       app_subnet:
         ipv4_address: 172.20.0.33
 
   node4:
-    image: 'redis:6.0-alpine'
+    image: 'redis:6.2-alpine'
     container_name: node4
-    command: redis-server /usr/local/etc/redis/redis.conf
+    command: redis-server --port 6376 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --cluster-announce-ip 172.20.0.34 --appendonly yes
     ports:
       - '6376:6376'
     volumes:
       - redis-node-4-data:/var/lib/redis
-      - ./docker/redis-node-4.conf:/usr/local/etc/redis/redis.conf
     networks:
       app_subnet:
         ipv4_address: 172.20.0.34
 
   node5:
-    image: 'redis:6.0-alpine'
+    image: 'redis:6.2-alpine'
     container_name: node5
-    command: redis-server /usr/local/etc/redis/redis.conf
+    command: redis-server --port 6377 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --cluster-announce-ip 172.20.0.35 --appendonly yes
     ports:
       - '6377:6377'
     volumes:
       - redis-node-5-data:/var/lib/redis
-      - ./docker/redis-node-5.conf:/usr/local/etc/redis/redis.conf
     networks:
       app_subnet:
         ipv4_address: 172.20.0.35
 
   node6:
-    image: 'redis:6.0-alpine'
+    image: 'redis:6.2-alpine'
     container_name: node6
-    command: redis-server /usr/local/etc/redis/redis.conf
+    command: redis-server --port 6378 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --cluster-announce-ip 172.20.0.36 --appendonly yes
     ports:
       - '6378:6378'
     volumes:
       - redis-node-6-data:/var/lib/redis
-      - ./docker/redis-node-6.conf:/usr/local/etc/redis/redis.conf
     networks:
       app_subnet:
         ipv4_address: 172.20.0.36
@@ -100,7 +94,6 @@ volumes:
   redis-node-4-data:
   redis-node-5-data:
   redis-node-6-data:
-
 
 networks:
   app_subnet:
